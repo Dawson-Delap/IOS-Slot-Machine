@@ -53,18 +53,19 @@ struct ContentView: View {
             spinCountSaved = spinCount
         }
     }
+    @State var bet: Double = 5.0
     var images = ["x.circle.fill","globe.americas.fill", "sun.horizon.fill", "7.circle.fill", "car.fill", "heart.circle.fill", "cloud.bolt.rain.fill"]
     var colors = [Color.red, Color.red, Color.orange, Color.yellow, Color.green, Color.blue, Color.purple, Color.pink]
     func checkWin() {
         if slot1img == 3 && slot2img == 3 && slot3img == 3 {
-            money += 10000
-            updateTimestamp(earned: "10,000")
+            money += 1000000
+            updateTimestamp(earned: "1,000,000")
             withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
                 isBlinking = true
             }
         }else if slot1img == slot2img && slot2img == slot3img {
-            money += 1000
-            updateTimestamp(earned: "1,000")
+            money += 100000
+            updateTimestamp(earned: "100,000")
             withAnimation(.easeInOut(duration: 0.5).repeatForever(autoreverses: true)) {
                 isBlinking = true
             }
@@ -72,12 +73,12 @@ struct ContentView: View {
     }
     
     func updateTimestamp(earned: String) {
-            let now = Date()
-            let formatter = DateFormatter()
-            formatter.dateFormat = "MM/dd/yy"
-            currentTimestamp = formatter.string(from: now)
-            allgains = "\(currentTimestamp) Spin \(spinCount): +\(earned)\n" + allgains
-        }
+        let now = Date()
+        let formatter = DateFormatter()
+        formatter.dateFormat = "MM/dd"
+        currentTimestamp = formatter.string(from: now)
+        allgains = "\(currentTimestamp) Spin \(spinCount): +\(earned)\n" + allgains
+    }
     
     @State var done1 = false
     @State var done2 = false
@@ -85,14 +86,14 @@ struct ContentView: View {
         if money < 0{
             moncolor = .red
         }else{
-            moncolor = .white
+            moncolor = .green
         }
     }
     func spin() {
         spinCount += 1
         done1 = false
         done2 = false
-        money -= 10
+        money -= 100
         redmoney()
         if money < 0{
             moncolor = .red
@@ -105,7 +106,6 @@ struct ContentView: View {
         
     }
     func spin2() {
-        
         let count = 0
         let randomInt2 = Int.random(in: 7...12)
         let randomInt3 = Int.random(in: 7...12)
@@ -230,48 +230,53 @@ struct ContentView: View {
                     }
                     
                     Spacer()
-                    HStack{
-                        HStack{ // Adjust spacing here
-                            Toggle("", isOn: $autoSpin)
-                                .labelsHidden()
-                                .toggleStyle(SwitchToggleStyle(tint: .blue))
-                            Text("Auto")
-                                .foregroundColor(.white)
-                        }
-                        .frame(width: 120, height: 60)
-                        .background(Color(white: 0.3))
-                        .cornerRadius(10)
-                        Button(action: {
-                            withAnimation{
-                                spin()
-                                isDisabled = true
+                    VStack{
+                        HStack{
+                            HStack{ // Adjust spacing here
+                                Toggle("", isOn: $autoSpin)
+                                    .labelsHidden()
+                                    .toggleStyle(SwitchToggleStyle(tint: .blue))
+                                Text("Auto")
+                                    .foregroundColor(.white)
                             }
-                        }) {
-                            Label("Spin", systemImage: "arrow.triangle.2.circlepath")
-                                .font(Font.system(size: 20))
-                                .foregroundColor(Color.white)
-                                .frame(width: 120, height: 60)
-                                .background(Color.blue)
-                                .cornerRadius(10)
-                        }.disabled(isDisabled)
-                        NavigationLink(destination: gainsView(
-                            allgains: $allgains,
-                            isBlinking: $isBlinking
-                        )) {
-                            Text("Gains")
-                                .font(Font.system(size: 20))
-                                .foregroundColor(Color.white)
-                                .frame(width: 120, height: 60)
-                                .background(isBlinking ? Color(white: 0.5) : Color(white: 0.3))
-                                .cornerRadius(10)
+                            .frame(width: 120, height: 60)
+                            .background(Color(white: 0.3))
+                            .cornerRadius(10)
+                            Button(action: {
+                                withAnimation{
+                                    spin()
+                                    isDisabled = true
+                                }
+                            }) {
+                                Label("Spin", systemImage: "arrow.triangle.2.circlepath")
+                                    .font(Font.system(size: 20))
+                                    .foregroundColor(Color.white)
+                                    .frame(width: 120, height: 60)
+                                    .background(Color.blue)
+                                    .cornerRadius(10)
+                            }.disabled(isDisabled)
+                            NavigationLink(destination: gainsView(
+                                allgains: $allgains,
+                                isBlinking: $isBlinking
+                            )) {
+                                Text("Gains")
+                                    .font(Font.system(size: 20))
+                                    .foregroundColor(Color.white)
+                                    .frame(width: 120, height: 60)
+                                    .background(isBlinking ? Color(white: 0.5) : Color(white: 0.3))
+                                    .cornerRadius(10)
+                            }
                         }
                     }
                     //MARK: On Appear
                 }.onAppear() {
-                    redmoney()
+                    money = 0
+                    allgains = ""
+                    spinCount = 0
                     money = moneySaved
                     allgains = allgainsSaved
                     spinCount = spinCountSaved
+                    redmoney()
                 }
                 .padding()
             }
@@ -303,7 +308,7 @@ struct gainsView: View {
                     ScrollView{
                         Text("\(allgains)")
                             .foregroundStyle(Color.white)
-                            .font(Font.system(size: 30))
+                            .font(Font.system(size: 25))
                     }
                 }
             }.onAppear(){
